@@ -151,12 +151,12 @@
     if (!window.location.search.includes("v=")) {
       const baseUrl = window.location.origin + window.location.pathname;
       // เพิ่ม ?v=2 ถ้า URL ไม่มี query อื่น
-      // แต่ถ้ามี query อื่น (เช่น ?foo=bar) ต้องเพิ่ม &v=2 แทน
+      // แต่ถ้ามี query อื่น (เช่น ?foo=bar) ต้องเพิ่ม &v= แทน
       let newUrl = baseUrl;
       if (window.location.search.length > 0) {
-        newUrl += window.location.search + "&v=2";
+        newUrl += window.location.search + "&v=3";
       } else {
-        newUrl += "?v=2";
+        newUrl += "?v=3";
       }
       window.location.href = newUrl;
     }
