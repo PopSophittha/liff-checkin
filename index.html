@@ -359,6 +359,7 @@
     }
 
     function checkLateStatus() {
+      const status = currentStatus;
       if (status.toLowerCase() !== "Check In") {
         return ""; // ถ้าไม่ใช่ Check-In ไม่ต้องแสดงอะไรเลย
       }
