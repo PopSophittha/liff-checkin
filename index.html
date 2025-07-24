@@ -154,9 +154,9 @@
       // แต่ถ้ามี query อื่น (เช่น ?foo=bar) ต้องเพิ่ม &v= แทน
       let newUrl = baseUrl;
       if (window.location.search.length > 0) {
-        newUrl += window.location.search + "&v=5";
+        newUrl += window.location.search + "&v=7";
       } else {
-        newUrl += "?v=5";
+        newUrl += "?v=7";
       }
       window.location.href = newUrl;
       return;  // หยุด script หลัง redirect
