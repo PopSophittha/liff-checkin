@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Check In</title>
+  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+</head>
+<body>
+  <h1>LINE Check In</h1>
+  <button onclick="checkIn()">Check In</button>
+
+  <script>
+    async function main() {
+      await liff.init({ liffId: "2007788493-vwxmBkLE" });
+
+      if (!liff.isLoggedIn()) {
+        liff.login();
+        return;
+      }
+
+      const profile = await liff.getProfile();
+      alert("Welcome " + profile.displayName);
+    }
+
+    function checkIn() {
+      alert("You clicked Check In!");
+    }
+
+    main();
+  </script>
+</body>
+</html>
