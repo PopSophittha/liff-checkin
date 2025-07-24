@@ -176,6 +176,7 @@
     // }, 3000);
 
     let displayName = "";
+    let userId = "";
     let currentStatus = ""; // checkin / checkout
 
     async function main() {
@@ -200,6 +201,7 @@
         log("กำลังดึงชื่อผู้ใช้");
         const profile = await liff.getProfile();
         displayName = profile.displayName;
+        userId = profile.userId
 
         document.getElementById("welcome").innerText = "👤 Welcome " + displayName;
         getLocation();
@@ -247,13 +249,6 @@
     }
 
     function submitForm(statusType) {
-      // displayName = document.getElementById("employeeName").value;
-
-      // if (!displayName) {
-      //   alert("กรุณาเลือกชื่อก่อน");
-      //   return;
-      // }
-      
       currentStatus = statusType;
 
       const lat = document.getElementById('latHidden').value;
@@ -267,27 +262,24 @@
 
       //for submit to web api in GAS
       // log("กำลังส่งพิกัด");
-      // fetch('https://script.google.com/macros/s/AKfycbx60MJv0fLPsoHR13uDkFdbHi2pdUsNM7C_NypCrA1zQf-yiB6k0LaatSfGFAYPTbk/exec', {
-      //   method: 'POST',
-      //   body: JSON.stringify({
-      //     name: displayName,
-      //     status: statusType,
-      //     lat: lat,
-      //     lng: lng
-      //   }),
-      //   headers: {
-      //     'Content-Type': 'application/json'
-      //   }
-      // })
-      // .then(response => response.json())
-      // .then(data => {
-      //   alert('บันทึกสำเร็จ');
-      //   // อื่น ๆ เช่น ส่งข้อความ LINE หรือรีเฟรชพิกัด
-      // })
-      // .catch(error => {
-      //   alert('เกิดข้อผิดพลาด: ' + error.message);
-      // });
-      
+      const payload = {
+        userId: userProfile.userId,
+        name: userProfile.displayName,
+        action: currentStatus,
+        lat: location.coords.latitude,
+        lng: location.coords.longitude
+      };
+
+      const url = "https://script.google.com/macros/s/AKfycbx60MJv0fLPsoHR13uDkFdbHi2pdUsNM7C_NypCrA1zQf-yiB6k0LaatSfGFAYPTbk/exec";
+      const res = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+
+      const result = await res.text();
+      document.getElementById("status").innerText = "✅ บันทึกสำเร็จ: " + result;
+ 
       // for use inside GAS
       // google.script.run.withSuccessHandler(function(status) {
         log("กำลังส่งพิกัด");
@@ -328,6 +320,10 @@
     function summaryMessage() {
       log("กำลังส่งข้อความ");
       const name = displayName;
+
+      const timestamp: new Date().toISOString()
+      const verifyId = userId + timestamp;
+      
       const lat = document.getElementById('latHidden').value;
       const lng = document.getElementById('lngHidden').value;
       const status = currentStatus;
@@ -341,7 +337,8 @@
           `📥 [CHECK IN] ${name}\n`+
           `${now}${lateInfo}\n\n`+
           
-          `📍 ตำแหน่ง: ${mapUrl}`
+          `📍 ตำแหน่ง: ${mapUrl}\n`+
+          `verifycode:${verifyId}`
       };
       
       const checkoutMessage = {
@@ -350,7 +347,8 @@
           `📤 [CHECK OUT] ${name}\n`+
           `${now}\n\n`+
           
-          `📍 ตำแหน่ง: ${mapUrl}`
+          `📍 ตำแหน่ง: ${mapUrl}\n`+
+          `verifycode:${verifyId}`
       };
       
       const message = (status === 'Check In') ? checkinMessage : checkoutMessage;
@@ -366,44 +364,44 @@
         });
     }
 
-    function checkLateStatus() {
-  const status = currentStatus;
-  if (status !== "Check In") {
-    return ""; // ไม่ใช่ Check In ก็ไม่แสดงอะไร
-  }
-
-  const now = new Date();
-
-  const roundTimes = [
-    new Date(now.getFullYear(), now.getMonth(), now.getDate(), 9, 0, 0),
-    new Date(now.getFullYear(), now.getMonth(), now.getDate(), 14, 0, 0),
-    new Date(now.getFullYear(), now.getMonth(), now.getDate(), 18, 0, 0)
-  ];
-
-  let matchedRound = null;
-
-  // หา round ที่ user เข้าก่อนหรือหลังรอบไม่เกิน 1 ชม.
-  for (let i = 0; i < roundTimes.length; i++) {
-    const round = roundTimes[i];
-    const diffMinutes = (now - round) / 60000; // คำนวณระยะห่างเป็นนาที
-
-    if (diffMinutes >= -60 && diffMinutes <= 120) {
-      // -60 = มาก่อนรอบไม่เกิน 1 ชม., 120 = ช้าสุดไม่เกิน 2 ชม.
-      matchedRound = round;
-      break;
+  function checkLateStatus() {
+    const status = currentStatus;
+    if (status !== "Check In") {
+      return ""; // ไม่ใช่ Check In ก็ไม่แสดงอะไร
     }
-  }
-
-  if (matchedRound) {
-    const diffMinutes = Math.floor((now - matchedRound) / 60000);
-    if (diffMinutes > 0) {
-      return ` | ⏰ สาย ${diffMinutes} นาที`;
-    } else {
-      return ""; // เข้าก่อนรอบ => ไม่ถือว่าสาย
+  
+    const now = new Date();
+  
+    const roundTimes = [
+      new Date(now.getFullYear(), now.getMonth(), now.getDate(), 9, 0, 0),
+      new Date(now.getFullYear(), now.getMonth(), now.getDate(), 14, 0, 0),
+      new Date(now.getFullYear(), now.getMonth(), now.getDate(), 18, 0, 0)
+    ];
+  
+    let matchedRound = null;
+  
+    // หา round ที่ user เข้าก่อนหรือหลังรอบไม่เกิน 1 ชม.
+    for (let i = 0; i < roundTimes.length; i++) {
+      const round = roundTimes[i];
+      const diffMinutes = (now - round) / 60000; // คำนวณระยะห่างเป็นนาที
+  
+      if (diffMinutes >= -60 && diffMinutes <= 120) {
+        // -60 = มาก่อนรอบไม่เกิน 1 ชม., 120 = ช้าสุดไม่เกิน 2 ชม.
+        matchedRound = round;
+        break;
+      }
     }
-  }
-
-  return ""; // ยังไม่เข้ารอบใดเลย หรือเร็วเกินไป
+  
+    if (matchedRound) {
+      const diffMinutes = Math.floor((now - matchedRound) / 60000);
+      if (diffMinutes > 0) {
+        return ` | ⏰ สาย ${diffMinutes} นาที`;
+      } else {
+        return ""; // เข้าก่อนรอบ => ไม่ถือว่าสาย
+      }
+    }
+  
+    return ""; // ยังไม่เข้ารอบใดเลย หรือเร็วเกินไป
 }
 
     // โหลดทันทีเมื่อ DOM พร้อม
