@@ -212,6 +212,7 @@
 
     function getLocation() {
       if (navigator.geolocation) {
+        log("กำลังดึงพิกัด");
         navigator.geolocation.getCurrentPosition(successCallback, errorCallback);
       } else {
         alert("เบราว์เซอร์ของคุณไม่รองรับ Geolocation");
@@ -265,6 +266,7 @@
       }
 
       //for submit to web api in GAS
+      log("กำลังดึงส่งพิกัด");
       fetch('https://script.google.com/macros/s/AKfycbx60MJv0fLPsoHR13uDkFdbHi2pdUsNM7C_NypCrA1zQf-yiB6k0LaatSfGFAYPTbk/exec', {
         method: 'POST',
         body: JSON.stringify({
