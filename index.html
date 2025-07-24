@@ -337,7 +337,7 @@
 
       const checkinMessage = {
         type: 'text',
-        text: `📥 ${name}\n\n${status}\n${now}\n${lateInfo}\n\n📍 ตำแหน่ง: ${mapUrl}`
+        text: `📥 ${name}\n\n${status}\n${now}${lateInfo}\n\n📍 ตำแหน่ง: ${mapUrl}`
       };
       
       const checkoutMessage = {
@@ -376,7 +376,7 @@
       ];
     
       // คืนค่า default
-      let lateText = "ตรงเวลา";
+      let lateText = "";
     
       for (let i = 0; i < roundTimes.length; i++) {
         const checkTime = new Date(); // สร้างใหม่ในแต่ละรอบ
@@ -387,7 +387,7 @@
           // ถ้าอยู่ในช่วง 1 ชม. หลังเวลาเปิด
           const diffMinutes = Math.floor((now - checkTime) / 60000);
           if (diffMinutes > 0) {
-            lateText = `⏰ สาย ${diffMinutes} นาที`;
+            lateText = `\n⏰ สาย ${diffMinutes} นาที`;
           }
           break;
         }
