@@ -154,9 +154,9 @@
       // แต่ถ้ามี query อื่น (เช่น ?foo=bar) ต้องเพิ่ม &v= แทน
       let newUrl = baseUrl;
       if (window.location.search.length > 0) {
-        newUrl += window.location.search + "&v=8.7";
+        newUrl += window.location.search + "&v=8.8";
       } else {
-        newUrl += "?v=8.7";
+        newUrl += "?v=8.8";
       }
       window.location.href = newUrl;
       return;  // หยุด script หลัง redirect
@@ -337,12 +337,20 @@
 
       const checkinMessage = {
         type: 'text',
-        text: `📥 ${name}\n\n${status}\n${now}${lateInfo}\n\n📍 ตำแหน่ง: ${mapUrl}`
+        text: 
+          `📥 [CHECK IN] ${name}\n`+
+          `${now}${lateInfo}\n\n`+
+          
+          `📍 ตำแหน่ง: ${mapUrl}`
       };
       
       const checkoutMessage = {
         type: 'text',
-        text: `📤 ${name}\n\n${status}\n${now}\n\n📍 ตำแหน่ง: ${mapUrl}`
+        text:
+          `📤 [CHECK OUT] ${name}\n`+
+          `${now}\n\n`+
+          
+          `📍 ตำแหน่ง: ${mapUrl}`
       };
       
       const message = (status === 'Check In') ? checkinMessage : checkoutMessage;
@@ -385,7 +393,7 @@
       if (latestRound) {
         const diffMinutes = Math.floor((now - latestRound) / 60000);
         if (diffMinutes > 0) {
-          return `\n⏰ สาย ${diffMinutes} นาที`;
+          return ` | ⏰ สาย ${diffMinutes} นาที`;
         } else {
            return ""; // มาตรงเวลาเป๊ะ
         }
@@ -400,7 +408,7 @@
 </head>
 <body>
   <div class="top-container">
-    <h1>Manta Pharmacy checkin/checkout v8.7</h1>
+    <h1>Manta Pharmacy checkin/checkout v8.8</h1>
     <p id="welcome">👤 Welcome loading...</p>
 
 <!--     <div class="select-row">
