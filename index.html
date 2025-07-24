@@ -154,9 +154,9 @@
       // แต่ถ้ามี query อื่น (เช่น ?foo=bar) ต้องเพิ่ม &v= แทน
       let newUrl = baseUrl;
       if (window.location.search.length > 0) {
-        newUrl += window.location.search + "&v=7";
+        newUrl += window.location.search + "&v=8";
       } else {
-        newUrl += "?v=7";
+        newUrl += "?v=8";
       }
       window.location.href = newUrl;
       return;  // หยุด script หลัง redirect
@@ -333,15 +333,16 @@
       const status = currentStatus;
       const now = new Date().toLocaleString('th-TH'); // หรือใช้ .toISOString()
       const mapUrl = `https://www.google.com/maps?q=${lat},${lng}`;
+      const lateInfo = checkLateStatus();
 
       const checkinMessage = {
         type: 'text',
-        text: `📥 ${name}\n\n${status}\n🕒 ${now}\n\n📍 ตำแหน่ง: ${mapUrl}`
+        text: `📥 ${name}\n\n${status}\n🕒 ${now}\n⏰ ${lateInfo}\n\n📍 ตำแหน่ง: ${mapUrl}`
       };
       
       const checkoutMessage = {
         type: 'text',
-        text: `📤 ${name}\n\n${status}\n🕒 ${now}\n\n📍 ตำแหน่ง: ${mapUrl}`
+        text: `📤 ${name}\n\n${status}\n🕒 ${now}\n⏰ ${lateInfo}\n\n📍 ตำแหน่ง: ${mapUrl}`
       };
       
       const message = (status === 'Check In') ? checkinMessage : checkoutMessage;
@@ -357,6 +358,38 @@
         });
     }
 
+    function checkLateStatus() {
+      const now = new Date(); // เวลา check-in ปัจจุบัน
+      const currentHour = now.getHours();
+      const currentMinute = now.getMinutes();
+    
+      // สร้างเวลาเปรียบเทียบ
+      const roundTimes = [
+        new Date(now.setHours(9, 0, 0, 0)),   // เช้า
+        new Date(now.setHours(14, 0, 0, 0)),  // บ่าย
+        new Date(now.setHours(18, 0, 0, 0))   // เย็น
+      ];
+    
+      // คืนค่า default
+      let lateText = "ตรงเวลา";
+    
+      for (let i = 0; i < roundTimes.length; i++) {
+        const checkTime = new Date(); // สร้างใหม่ในแต่ละรอบ
+        const [h, m] = [[9, 14, 18][i], 0];
+        checkTime.setHours(h, m, 0, 0);
+    
+        if (now >= checkTime && now < new Date(checkTime.getTime() + 60 * 60 * 1000)) {
+          // ถ้าอยู่ในช่วง 1 ชม. หลังเวลาเปิด
+          const diffMinutes = Math.floor((now - checkTime) / 60000);
+          if (diffMinutes > 0) {
+            lateText = `สาย ${diffMinutes} นาที`;
+          }
+          break;
+        }
+      }
+    
+      return lateText;
+    }
 
     // โหลดทันทีเมื่อ DOM พร้อม
     document.addEventListener("DOMContentLoaded", main);
@@ -364,7 +397,7 @@
 </head>
 <body>
   <div class="top-container">
-    <h1>Manta Pharmacy checkin/checkout v8.0</h1>
+    <h1>Manta Pharmacy checkin/checkout v8.1</h1>
     <p id="welcome">👤 Welcome loading...</p>
 
 <!--     <div class="select-row">
