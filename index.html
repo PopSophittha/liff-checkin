@@ -191,17 +191,17 @@
           alert("เกิดข้อผิดพลาดในการ init LIFF: " + JSON.stringify(e));
         }
 
-        // log("กำลังตรวจสอบการเข้าสู่ระบบ");
-        // if (!liff.isLoggedIn()) {
-        //   liff.login();
-        //   return;
-        // }
+        log("กำลังตรวจสอบการเข้าสู่ระบบ");
+        if (!liff.isLoggedIn()) {
+          liff.login();
+          return;
+        }
 
-        // log("กำลังดึงชื่อผู้ใช้");
-        // const profile = await liff.getProfile();
-        // displayName = profile.displayName;
+        log("กำลังดึงชื่อผู้ใช้");
+        const profile = await liff.getProfile();
+        displayName = profile.displayName;
 
-        // document.getElementById("welcome").innerText = "👤 ยินดีต้อนรับ: " + displayName;
+        document.getElementById("welcome").innerText = "👤 ยินดีต้อนรับ: " + displayName;
         getLocation();
       } catch (err) {
         document.getElementById("welcome").innerText = "❌ เกิดข้อผิดพลาด: " + err.message;
@@ -246,12 +246,12 @@
     }
 
     function submitForm(statusType) {
-      displayName = document.getElementById("employeeName").value;
+      // displayName = document.getElementById("employeeName").value;
 
-      if (!displayName) {
-        alert("กรุณาเลือกชื่อก่อน");
-        return;
-      }
+      // if (!displayName) {
+      //   alert("กรุณาเลือกชื่อก่อน");
+      //   return;
+      // }
       
       currentStatus = statusType;
 
@@ -266,7 +266,7 @@
 
       google.script.run.withSuccessHandler(function(status) {
         alert("📌 บันทึก " + status + " เรียบร้อยแล้ว!");
-        // liff.closeWindow(); // ปิด LIFF ทันทีหลังจากกด OK ใน alert //ใข้ได้เมื่อ init liff สมบูรณ์
+        liff.closeWindow(); // ปิด LIFF ทันทีหลังจากกด OK ใน alert //ใข้ได้เมื่อ init liff สมบูรณ์
 
         // ✅ เรียกส่งข้อความเข้าแชทตรงนี้
         if (liff.isInClient()) {
@@ -306,7 +306,7 @@
 
       const message = {
         type: 'text',
-        text: `📌 ${status} สำเร็จ\n📍 ตำแหน่ง: ${lat}, ${lng}`
+        text: `📌 {displayName} ${status} สำเร็จ\n📍 ตำแหน่ง: ${lat}, ${lng}`
       };
 
       liff.sendMessages([message])
@@ -327,10 +327,10 @@
 </head>
 <body>
   <div class="top-container">
-    <h1>Manta Pharmacy checkin/checkout v4.0</h1>
-    <!-- <p id="welcome">👤 ยินดีต้อนรับ</p> -->
+    <p>Manta Pharmacy checkin/checkout v4.0</p>
+    <p id="welcome">👤 ยินดีต้อนรับ loading...</p>
 
-    <div class="select-row">
+<!--     <div class="select-row">
       <label for="employeeName">ชื่อพนักงาน:</label>
       <select id="employeeName">
         <option value="">-- กรุณาเลือก --</option>
@@ -354,7 +354,7 @@
         <option value="จักร">จักร</option>
         <option value="นูนู">นูนู</option>
       </select>
-    </div>
+    </div> -->
   </div>
 
   <div>
