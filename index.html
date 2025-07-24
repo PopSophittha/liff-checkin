@@ -154,9 +154,9 @@
       // แต่ถ้ามี query อื่น (เช่น ?foo=bar) ต้องเพิ่ม &v= แทน
       let newUrl = baseUrl;
       if (window.location.search.length > 0) {
-        newUrl += window.location.search + "&v=8.8";
+        newUrl += window.location.search + "&v=8.9";
       } else {
-        newUrl += "?v=8.8";
+        newUrl += "?v=8.9";
       }
       window.location.href = newUrl;
       return;  // หยุด script หลัง redirect
@@ -367,40 +367,44 @@
     }
 
     function checkLateStatus() {
-      const status = currentStatus;
-      if (status !== "Check In") {
-        return ""; // ถ้าไม่ใช่ Check-In ไม่ต้องแสดงอะไรเลย
-      }
-      
-      const now = new Date(); // เวลา check-in ปัจจุบัน
-      const currentHour = now.getHours();
-      const currentMinute = now.getMinutes();
-    
-      const roundTimes = [
-        new Date(now.getFullYear(), now.getMonth(), now.getDate(), 9, 0, 0),
-        new Date(now.getFullYear(), now.getMonth(), now.getDate(), 14, 0, 0),
-        new Date(now.getFullYear(), now.getMonth(), now.getDate(), 18, 0, 0)
-      ];
-      
-      // หา round ที่ใกล้เคียงที่สุดก่อน now
-      let latestRound = null;
-      for (let i = 0; i < roundTimes.length; i++) {
-            if (now >= roundTimes[i]) {
-              latestRound = roundTimes[i];
-            }
-        }
-      
-      if (latestRound) {
-        const diffMinutes = Math.floor((now - latestRound) / 60000);
-        if (diffMinutes > 0) {
-          return ` | ⏰ สาย ${diffMinutes} นาที`;
-        } else {
-           return ""; // มาตรงเวลาเป๊ะ
-        }
-      }
-    
-      return ""; // ยังไม่ถึงเวลาเริ่มงานในรอบใดเลย
+  const status = currentStatus;
+  if (status !== "Check In") {
+    return ""; // ไม่ใช่ Check In ก็ไม่แสดงอะไร
+  }
+
+  const now = new Date();
+
+  const roundTimes = [
+    new Date(now.getFullYear(), now.getMonth(), now.getDate(), 9, 0, 0),
+    new Date(now.getFullYear(), now.getMonth(), now.getDate(), 14, 0, 0),
+    new Date(now.getFullYear(), now.getMonth(), now.getDate(), 18, 0, 0)
+  ];
+
+  let matchedRound = null;
+
+  // หา round ที่ user เข้าก่อนหรือหลังรอบไม่เกิน 1 ชม.
+  for (let i = 0; i < roundTimes.length; i++) {
+    const round = roundTimes[i];
+    const diffMinutes = (now - round) / 60000; // คำนวณระยะห่างเป็นนาที
+
+    if (diffMinutes >= -60 && diffMinutes <= 120) {
+      // -60 = มาก่อนรอบไม่เกิน 1 ชม., 120 = ช้าสุดไม่เกิน 2 ชม.
+      matchedRound = round;
+      break;
     }
+  }
+
+  if (matchedRound) {
+    const diffMinutes = Math.floor((now - matchedRound) / 60000);
+    if (diffMinutes > 0) {
+      return ` | ⏰ สาย ${diffMinutes} นาที`;
+    } else {
+      return ""; // เข้าก่อนรอบ => ไม่ถือว่าสาย
+    }
+  }
+
+  return ""; // ยังไม่เข้ารอบใดเลย หรือเร็วเกินไป
+}
 
     // โหลดทันทีเมื่อ DOM พร้อม
     document.addEventListener("DOMContentLoaded", main);
@@ -408,7 +412,7 @@
 </head>
 <body>
   <div class="top-container">
-    <h1>Manta Pharmacy checkin/checkout v8.8</h1>
+    <h1>Manta Pharmacy checkin/checkout v8.9</h1>
     <p id="welcome">👤 Welcome loading...</p>
 
 <!--     <div class="select-row">
