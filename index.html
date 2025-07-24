@@ -154,9 +154,9 @@
       // แต่ถ้ามี query อื่น (เช่น ?foo=bar) ต้องเพิ่ม &v= แทน
       let newUrl = baseUrl;
       if (window.location.search.length > 0) {
-        newUrl += window.location.search + "&v=8.9";
+        newUrl += window.location.search + "&v=8.10";
       } else {
-        newUrl += "?v=8.9";
+        newUrl += "?v=8.10";
       }
       window.location.href = newUrl;
       return;  // หยุด script หลัง redirect
@@ -410,7 +410,7 @@
 </head>
 <body>
   <div class="top-container">
-    <h1>Manta Pharmacy checkin/checkout v8.9</h1>
+    <h1>Manta Pharmacy checkin/checkout v8.10</h1>
     <p id="welcome">👤 Welcome loading...</p>
 
 <!--     <div class="select-row">
