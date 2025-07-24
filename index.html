@@ -154,9 +154,9 @@
       // แต่ถ้ามี query อื่น (เช่น ?foo=bar) ต้องเพิ่ม &v= แทน
       let newUrl = baseUrl;
       if (window.location.search.length > 0) {
-        newUrl += window.location.search + "&v=8.6";
+        newUrl += window.location.search + "&v=8.7";
       } else {
-        newUrl += "?v=8.6";
+        newUrl += "?v=8.7";
       }
       window.location.href = newUrl;
       return;  // หยุด script หลัง redirect
@@ -368,30 +368,26 @@
       const currentHour = now.getHours();
       const currentMinute = now.getMinutes();
     
-      // สร้างเวลาเปรียบเทียบ
       const roundTimes = [
-        new Date(now.setHours(9, 0, 0, 0)),   // เช้า
-        new Date(now.setHours(14, 0, 0, 0)),  // บ่าย
-        new Date(now.setHours(18, 0, 0, 0))   // เย็น
+        new Date(now.getFullYear(), now.getMonth(), now.getDate(), 9, 0, 0),
+        new Date(now.getFullYear(), now.getMonth(), now.getDate(), 14, 0, 0),
+        new Date(now.getFullYear(), now.getMonth(), now.getDate(), 18, 0, 0)
       ];
-
+      
+      // หา round ที่ใกล้เคียงที่สุดก่อน now
+      let latestRound = null;
       for (let i = 0; i < roundTimes.length; i++) {
-        // ถ้าอยู่ในช่วง 1 ชม. หลังเวลาเปิด
-        // const checkTime = new Date(); // สร้างใหม่ในแต่ละรอบ
-        // const [h, m] = [[9, 14, 18][i], 0];
-        // checkTime.setHours(h, m, 0, 0);
-        // if (now >= checkTime && now < new Date(checkTime.getTime() + 60 * 60 * 1000)) {
-           
-        const checkTime = roundTimes[i];
-
-        if (now >= checkTime) {
-          const diffMinutes = Math.floor((now - checkTime) / 60000);
-          if (diffMinutes > 0) {
-            return `\n⏰ สาย ${diffMinutes} นาที`;
-          } else {
-            return ""; // มาตรงเวลาเป๊ะ
-          }
-          break;
+            if (now >= roundTimes[i]) {
+              latestRound = roundTimes[i];
+            }
+        }
+      
+      if (latestRound) {
+        const diffMinutes = Math.floor((now - latestRound) / 60000);
+        if (diffMinutes > 0) {
+          return `\n⏰ สาย ${diffMinutes} นาที`;
+        } else {
+           return ""; // มาตรงเวลาเป๊ะ
         }
       }
     
@@ -404,7 +400,7 @@
 </head>
 <body>
   <div class="top-container">
-    <h1>Manta Pharmacy checkin/checkout v8.6</h1>
+    <h1>Manta Pharmacy checkin/checkout v8.7</h1>
     <p id="welcome">👤 Welcome loading...</p>
 
 <!--     <div class="select-row">
