@@ -260,26 +260,6 @@
         return;
       }
 
-      //for submit to web api in GAS
-      // log("กำลังส่งพิกัด");
-      const payload = {
-        userId: userProfile.userId,
-        name: userProfile.displayName,
-        action: currentStatus,
-        lat: location.coords.latitude,
-        lng: location.coords.longitude
-      };
-
-      const url = "https://script.google.com/macros/s/AKfycbx60MJv0fLPsoHR13uDkFdbHi2pdUsNM7C_NypCrA1zQf-yiB6k0LaatSfGFAYPTbk/exec";
-      const res = await fetch(url, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
-      });
-
-      const result = await res.text();
-      document.getElementById("status").innerText = "✅ บันทึกสำเร็จ: " + result;
- 
       // for use inside GAS
       // google.script.run.withSuccessHandler(function(status) {
         log("กำลังส่งพิกัด");
