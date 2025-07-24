@@ -146,10 +146,19 @@
   </style>
 
   <script>
-    // ตรวจสอบว่ามี ?v= ใน URL หรือยัง ถ้าไม่มี ให้ redirect ไปเพิ่ม
+    // เช็คว่ามี v= อยู่ใน URL หรือยัง
+    // และไม่ redirect ถ้ามีแล้ว
     if (!window.location.search.includes("v=")) {
       const baseUrl = window.location.origin + window.location.pathname;
-      window.location.href = baseUrl + "?v=2";  // เปลี่ยนเลข 2 ตามเวอร์ชัน
+      // เพิ่ม ?v=2 ถ้า URL ไม่มี query อื่น
+      // แต่ถ้ามี query อื่น (เช่น ?foo=bar) ต้องเพิ่ม &v=2 แทน
+      let newUrl = baseUrl;
+      if (window.location.search.length > 0) {
+        newUrl += window.location.search + "&v=2";
+      } else {
+        newUrl += "?v=2";
+      }
+      window.location.href = newUrl;
     }
   </script>
 
