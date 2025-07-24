@@ -266,39 +266,40 @@
       }
 
       //for submit to web api in GAS
-      log("กำลังดึงส่งพิกัด");
-      fetch('https://script.google.com/macros/s/AKfycbx60MJv0fLPsoHR13uDkFdbHi2pdUsNM7C_NypCrA1zQf-yiB6k0LaatSfGFAYPTbk/exec', {
-        method: 'POST',
-        body: JSON.stringify({
-          name: displayName,
-          status: statusType,
-          lat: lat,
-          lng: lng
-        }),
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      })
-      .then(response => response.json())
-      .then(data => {
-        alert('บันทึกสำเร็จ');
-        // อื่น ๆ เช่น ส่งข้อความ LINE หรือรีเฟรชพิกัด
-      })
-      .catch(error => {
-        alert('เกิดข้อผิดพลาด: ' + error.message);
-      });
+      // log("กำลังส่งพิกัด");
+      // fetch('https://script.google.com/macros/s/AKfycbx60MJv0fLPsoHR13uDkFdbHi2pdUsNM7C_NypCrA1zQf-yiB6k0LaatSfGFAYPTbk/exec', {
+      //   method: 'POST',
+      //   body: JSON.stringify({
+      //     name: displayName,
+      //     status: statusType,
+      //     lat: lat,
+      //     lng: lng
+      //   }),
+      //   headers: {
+      //     'Content-Type': 'application/json'
+      //   }
+      // })
+      // .then(response => response.json())
+      // .then(data => {
+      //   alert('บันทึกสำเร็จ');
+      //   // อื่น ๆ เช่น ส่งข้อความ LINE หรือรีเฟรชพิกัด
+      // })
+      // .catch(error => {
+      //   alert('เกิดข้อผิดพลาด: ' + error.message);
+      // });
       
       // for use inside GAS
       // google.script.run.withSuccessHandler(function(status) {
-      //   alert("📌 บันทึก " + status + " เรียบร้อยแล้ว!");
-      //   liff.closeWindow(); // ปิด LIFF ทันทีหลังจากกด OK ใน alert //ใข้ได้เมื่อ init liff สมบูรณ์
+        log("กำลังส่งพิกัด");
+        alert("📌 บันทึก " + status + " เรียบร้อยแล้ว!");
+        liff.closeWindow(); // ปิด LIFF ทันทีหลังจากกด OK ใน alert //ใข้ได้เมื่อ init liff สมบูรณ์
 
-      //   // ✅ เรียกส่งข้อความเข้าแชทตรงนี้
-      //   if (liff.isInClient()) {
-      //     summaryMessage();
-      //   } else {
-      //     console.warn("❌ ไม่ได้เปิดจากในแชท LINE OA");
-      //   }
+        // ✅ เรียกส่งข้อความเข้าแชทตรงนี้
+        if (liff.isInClient()) {
+          summaryMessage();
+        } else {
+          console.warn("❌ ไม่ได้เปิดจากในแชท LINE OA");
+        }
 
       //   getLocation(); // อัปเดตตำแหน่งใหม่ หากใช้ต่อ
       // }).saveLocation(displayName, currentStatus, lat, lng);
@@ -325,6 +326,7 @@
     }
 
     function summaryMessage() {
+      log("กำลังส่งข้อความ");
       const lat = document.getElementById('latHidden').value;
       const lng = document.getElementById('lngHidden').value;
       const status = currentStatus;
