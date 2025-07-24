@@ -144,6 +144,15 @@
     }
     
   </style>
+
+  <script>
+    // ตรวจสอบว่ามี ?v= ใน URL หรือยัง ถ้าไม่มี ให้ redirect ไปเพิ่ม
+    if (!window.location.search.includes("v=")) {
+      const baseUrl = window.location.origin + window.location.pathname;
+      window.location.href = baseUrl + "?v=2";  // เปลี่ยนเลข 2 ตามเวอร์ชัน
+    }
+  </script>
+
   <script src="https://static.line-scdn.net/liff/edge/versions/2.27.0/sdk.js"></script>
   <script>
     // setTimeout(() => {
