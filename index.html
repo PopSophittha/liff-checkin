@@ -374,26 +374,28 @@
         new Date(now.setHours(14, 0, 0, 0)),  // บ่าย
         new Date(now.setHours(18, 0, 0, 0))   // เย็น
       ];
-    
-      // คืนค่า default
-      let lateText = "";
-    
+
       for (let i = 0; i < roundTimes.length; i++) {
-        const checkTime = new Date(); // สร้างใหม่ในแต่ละรอบ
-        const [h, m] = [[9, 14, 18][i], 0];
-        checkTime.setHours(h, m, 0, 0);
-    
-        if (now >= checkTime && now < new Date(checkTime.getTime() + 60 * 60 * 1000)) {
-          // ถ้าอยู่ในช่วง 1 ชม. หลังเวลาเปิด
+        // ถ้าอยู่ในช่วง 1 ชม. หลังเวลาเปิด
+        // const checkTime = new Date(); // สร้างใหม่ในแต่ละรอบ
+        // const [h, m] = [[9, 14, 18][i], 0];
+        // checkTime.setHours(h, m, 0, 0);
+        // if (now >= checkTime && now < new Date(checkTime.getTime() + 60 * 60 * 1000)) {
+           
+        const checkTime = roundTimes[i];
+
+        if (now >= checkTime) {
           const diffMinutes = Math.floor((now - checkTime) / 60000);
           if (diffMinutes > 0) {
-            lateText = `\n⏰ สาย ${diffMinutes} นาที`;
+            return `\n⏰ สาย ${diffMinutes} นาที`;
+          } else {
+            return ""; // มาตรงเวลาเป๊ะ
           }
           break;
         }
       }
     
-      return lateText;
+      return ""; // ยังไม่ถึงเวลาเริ่มงานในรอบใดเลย
     }
 
     // โหลดทันทีเมื่อ DOM พร้อม
