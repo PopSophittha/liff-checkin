@@ -342,7 +342,7 @@
       
       const checkoutMessage = {
         type: 'text',
-        text: `📤 ${name}\n\n${status}\n🕒 ${now}\n⏰ ${lateInfo}\n\n📍 ตำแหน่ง: ${mapUrl}`
+        text: `📤 ${name}\n\n${status}\n🕒 ${now}\n\n📍 ตำแหน่ง: ${mapUrl}`
       };
       
       const message = (status === 'Check In') ? checkinMessage : checkoutMessage;
@@ -359,6 +359,10 @@
     }
 
     function checkLateStatus() {
+      if (status.toLowerCase() !== "Check In") {
+        return ""; // ถ้าไม่ใช่ Check-In ไม่ต้องแสดงอะไรเลย
+      }
+      
       const now = new Date(); // เวลา check-in ปัจจุบัน
       const currentHour = now.getHours();
       const currentMinute = now.getMinutes();
