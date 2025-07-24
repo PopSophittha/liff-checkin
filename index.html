@@ -1,31 +1,360 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Check In</title>
-  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
-</head>
-<body>
-  <h1>LINE Check In</h1>
-  <button onclick="checkIn()">Check In</button>
+  <base target="_top">
+  <style>
+    html, body {
+      margin: 0;
+      padding: 10;
+      height: 100%;
+      font-family: sans-serif;
+      background-color: #f2f2f2;
+      box-sizing: border-box;
+    }
 
+    h1, #welcome {
+      text-align: center;
+      margin: 16px 0;
+    }
+
+    input[type="text"] {
+      width: 90%;
+      margin: 16px auto 24px auto;
+      display: block;
+      padding: 20px;
+      font-size: 22px;
+      border-radius: 12px;
+      border: 2px solid #aaa;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    .button-container {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 50vh; /* ครึ่งหน้าจอ */
+      display: flex;
+      flex-direction: column;
+      justify-content: space-evenly;
+      padding: 16px;
+      background: white;
+      box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    button {
+      width: 95%;
+      height: 45%;
+      font-size: 7vw; /* ปรับขนาดตามหน้าจอแบบ responsive */
+      font-weight: bold;
+      border: none;
+      border-radius: 16px;
+      color: white;
+      cursor: pointer;
+      touch-action: manipulation;
+      transition: background-color 0.2s ease, transform 0.1s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      line-height: 1.2;
+      padding: 0;
+    }
+
+    button:active {
+      transform: scale(0.97);
+      opacity: 0.95;
+    }
+
+    .checkin {
+      background-color: #4CAF50;
+    }
+
+    .checkout {
+      background-color: #e53935;
+    }
+
+    .top-container {
+      height: 50vh;           /* ครึ่งบนของจอ */
+      display: flex;
+      flex-direction: column;
+      justify-content: center;  /* จัดกลางแนวตั้ง */
+      align-items: center;      /* จัดกลางแนวนอน */
+      gap: 8px;                 /* ช่องว่างระหว่างบรรทัด */
+      text-align: center;
+      padding: 0 10px;
+    }
+
+    .top-container h1 {
+      font-size: 4vw;
+      margin: 0;
+      white-space: nowrap;       /* ไม่ตัดบรรทัด */
+      overflow: hidden;          /* ซ่อนข้อความเกิน */
+      text-overflow: ellipsis;   /* แสดง ... เมื่อข้อความยาวเกิน */
+      max-width: 100%;           /* กว้างเต็ม container */
+    }
+
+    #welcome {
+      font-size: 5vw;
+      margin: 0;
+    }
+
+    .top-container label {
+      font-size: 5.5vw;
+      margin-top: 8px;
+    }
+
+    .select-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;             /* ช่องว่างระหว่าง label กับ select */
+      width: 95%;
+      margin: 0 auto 16px auto;
+    }
+
+    .select-row label {
+      font-size: 5vw;
+      white-space: nowrap;   /* กัน label ขึ้นบรรทัดใหม่ */
+      flex-shrink: 0;
+    }
+
+    .select-row select {
+      flex-grow: 1;          /* select กินพื้นที่ที่เหลือ */
+      font-size: 5vw;
+      padding: 0.6em;
+      border-radius: 16px;
+      border: 2px solid #ccc;
+      box-sizing: border-box;
+      cursor: pointer;
+    }
+
+    #result {
+      text-align: center;
+      margin: 12px;
+      color: green;
+      font-size: 16px;
+    }
+
+    #debug {
+      font-size: 12px;
+      color: gray;
+      white-space: pre-wrap;
+      padding: 10px;
+    }
+    
+  </style>
+  <script src="https://static.line-scdn.net/liff/edge/versions/2.27.0/sdk.js"></script>
   <script>
-    async function main() {
-      await liff.init({ liffId: "2007788493-vwxmBkLE" });
+    // setTimeout(() => {
+      if (!window.liff) {
+        alert("❌ LIFF SDK ไม่โหลด หรือโดนบล็อคจาก CSP");
+      } else {
+        // log("✅ LIFF SDK โหลดแล้ว");
+        console.log("✅ LIFF SDK โหลดแล้ว", window.liff);
+      }
+    // }, 3000);
 
-      if (!liff.isLoggedIn()) {
-        liff.login();
+    let displayName = "";
+    let currentStatus = ""; // checkin / checkout
+
+    async function main() {
+      try {
+        try {
+          log("กำลังโหลด LIFF...");
+          await liff.init({ liffId: "2007788493-vwxmBkLE" });
+          log("✅ LIFF init success");
+          console.log("✅ LIFF init success");
+        } catch (e) {
+          log("❌ LIFF init failed:" + JSON.stringify(e));
+          console.error("❌ LIFF init failed:", e);
+          alert("เกิดข้อผิดพลาดในการ init LIFF: " + JSON.stringify(e));
+        }
+
+        // log("กำลังตรวจสอบการเข้าสู่ระบบ");
+        // if (!liff.isLoggedIn()) {
+        //   liff.login();
+        //   return;
+        // }
+
+        // log("กำลังดึงชื่อผู้ใช้");
+        // const profile = await liff.getProfile();
+        // displayName = profile.displayName;
+
+        // document.getElementById("welcome").innerText = "👤 ยินดีต้อนรับ: " + displayName;
+        getLocation();
+      } catch (err) {
+        document.getElementById("welcome").innerText = "❌ เกิดข้อผิดพลาด: " + err.message;
+        alert("❌ เกิดข้อผิดพลาด: " + err);
+        console.error("LIFF error:", err);
+      }
+    }
+
+    function getLocation() {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(successCallback, errorCallback);
+      } else {
+        alert("เบราว์เซอร์ของคุณไม่รองรับ Geolocation");
+      }
+    }
+
+    function successCallback(position) {
+      const lat = position.coords.latitude;
+      const lng = position.coords.longitude;
+
+      // document.getElementById('latText').innerText = lat;
+      // document.getElementById('lngText').innerText = lng;
+
+      document.getElementById('latHidden').value = lat;
+      document.getElementById('lngHidden').value = lng;
+    }
+
+    function errorCallback(error) {
+      switch(error.code) {
+        case error.PERMISSION_DENIED:
+          alert("คุณปฏิเสธการอนุญาตเข้าถึงตำแหน่ง");
+          break;
+        case error.POSITION_UNAVAILABLE:
+          alert("ไม่สามารถหาอุปกรณ์ระบุตำแหน่งได้");
+          break;
+        case error.TIMEOUT:
+          alert("หมดเวลารอรับตำแหน่ง");
+          break;
+        default:
+          alert("เกิดข้อผิดพลาดไม่ทราบสาเหตุ");
+      }
+    }
+
+    function submitForm(statusType) {
+      displayName = document.getElementById("employeeName").value;
+
+      if (!displayName) {
+        alert("กรุณาเลือกชื่อก่อน");
+        return;
+      }
+      
+      currentStatus = statusType;
+
+      const lat = document.getElementById('latHidden').value;
+      const lng = document.getElementById('lngHidden').value;
+      // const note = document.getElementById('note').value;
+
+      if (!lat || !lng) {
+        alert('ไม่พบพิกัด กรุณาอนุญาติเข้าถึงตำแหน่ง');
         return;
       }
 
-      const profile = await liff.getProfile();
-      alert("Welcome " + profile.displayName);
+      google.script.run.withSuccessHandler(function(status) {
+        alert("📌 บันทึก " + status + " เรียบร้อยแล้ว!");
+        // liff.closeWindow(); // ปิด LIFF ทันทีหลังจากกด OK ใน alert //ใข้ได้เมื่อ init liff สมบูรณ์
+
+        // ✅ เรียกส่งข้อความเข้าแชทตรงนี้
+        if (liff.isInClient()) {
+          summaryMessage();
+        } else {
+          console.warn("❌ ไม่ได้เปิดจากในแชท LINE OA");
+        }
+
+        getLocation(); // อัปเดตตำแหน่งใหม่ หากใช้ต่อ
+      }).saveLocation(displayName, currentStatus, lat, lng);
     }
 
-    function checkIn() {
-      alert("You clicked Check In!");
+    function log(msg) {
+      const debug = document.getElementById("debug");
+      debug.innerText += msg + "\n";
     }
 
-    main();
+    function timeout(ms, promise) {
+      return new Promise((resolve, reject) => {
+        const timer = setTimeout(() => reject(new Error("⏰ LIFF init timeout")), ms);
+        promise
+          .then((value) => {
+            clearTimeout(timer);
+            resolve(value);
+          })
+          .catch((err) => {
+            clearTimeout(timer);
+            reject(err);
+          });
+      });
+    }
+
+    function summaryMessage() {
+      const lat = document.getElementById('latHidden').value;
+      const lng = document.getElementById('lngHidden').value;
+      const status = currentStatus;
+
+      const message = {
+        type: 'text',
+        text: `📌 ${status} สำเร็จ\n📍 ตำแหน่ง: ${lat}, ${lng}`
+      };
+
+      liff.sendMessages([message])
+        .then(() => {
+          console.log('Message sent');
+          liff.closeWindow();
+        })
+        .catch((err) => {
+          console.error('Error sending message:', err);
+          alert('ส่งข้อความไม่สำเร็จ: ' + err.message);
+        });
+    }
+
+
+    // โหลดทันทีเมื่อ DOM พร้อม
+    document.addEventListener("DOMContentLoaded", main);
   </script>
+</head>
+<body>
+  <div class="top-container">
+    <h1>Manta Pharmacy checkin/checkout</h1>
+    <!-- <p id="welcome">👤 ยินดีต้อนรับ</p> -->
+
+    <div class="select-row">
+      <label for="employeeName">ชื่อพนักงาน:</label>
+      <select id="employeeName">
+        <option value="">-- กรุณาเลือก --</option>
+        <option value="แจง">แจง</option>
+        <option value="รัตน์">รัตน์</option>
+        <option value="นัน">นัน</option>
+        <option value="บีช">บีช</option>
+        <option value="น๊อต">น๊อต</option>
+        <option value="พวง">พวง</option>
+        <option value="เกศ">เกศ</option>
+        <option value="โบว์">โบว์</option>
+        <option value="ปุย">ปุย</option>
+        <option value="เน็ต">เน็ต</option>
+        <option value="กรุ๊ป">กรุ๊ป</option>
+        <option value="ปาย">ปาย</option>
+        <option value="จุ๊บ">จุ๊บ</option>
+        <option value="ว่าน">ว่าน</option>
+        <option value="ดัร">ดัร</option>
+        <option value="ขนมผิง">ขนมผิง</option>
+        <option value="ปอย">ปอย</option>
+        <option value="จักร">จักร</option>
+        <option value="นูนู">นูนู</option>
+      </select>
+    </div>
+  </div>
+
+  <div>
+    <!-- <label><b>ละติจูด:</b> <span id="latText">-</span></label><br> -->
+    <!-- <label><b>ลองจิจูด:</b> <span id="lngText">-</span></label><br><br> -->
+
+    <!-- hidden values ส่งไปกับฟอร์ม -->
+    <input type="hidden" id="latHidden" name="lat">
+    <input type="hidden" id="lngHidden" name="lng">
+  </div>
+
+  <!-- <label>หมายเหตุ:</label> -->
+  <!-- <input type="text" id="note" name="note"><br><br> -->
+
+  <div class="button-container">
+    <button class="checkin" onclick="submitForm('Check In')">📍 Check In</button>
+    <button class="checkout" onclick="submitForm('Check Out')">🕒 Check Out</button>
+  </div>
+
+  <pre id="debug" style="color:gray; font-size:12px;"></pre>
+  <div id="result" style="margin-top:20px; color:green;"></div>
 </body>
 </html>
