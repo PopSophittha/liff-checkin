@@ -201,7 +201,7 @@
         const profile = await liff.getProfile();
         displayName = profile.displayName;
 
-        document.getElementById("welcome").innerText = "👤 ยินดีต้อนรับ: " + displayName;
+        document.getElementById("welcome").innerText = "👤 Welcome " + displayName;
         getLocation();
       } catch (err) {
         document.getElementById("welcome").innerText = "❌ เกิดข้อผิดพลาด: " + err.message;
@@ -327,8 +327,8 @@
 </head>
 <body>
   <div class="top-container">
-    <p>Manta Pharmacy checkin/checkout v5.0</p>
-    <p id="welcome">👤 ยินดีต้อนรับ loading...</p>
+    <h1>Manta Pharmacy checkin/checkout v5.0</h1>
+    <p id="welcome">👤 Welcome loading...</p>
 
 <!--     <div class="select-row">
       <label for="employeeName">ชื่อพนักงาน:</label>
