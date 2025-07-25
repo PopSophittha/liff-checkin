@@ -154,9 +154,9 @@
       // แต่ถ้ามี query อื่น (เช่น ?foo=bar) ต้องเพิ่ม &v= แทน
       let newUrl = baseUrl;
       if (window.location.search.length > 0) {
-        newUrl += window.location.search + "&v=8.13";
+        newUrl += window.location.search + "&v=8.14";
       } else {
-        newUrl += "?v=8.13";
+        newUrl += "?v=8.14";
       }
       window.location.href = newUrl;
       return;  // หยุด script หลัง redirect
@@ -413,34 +413,10 @@
 </head>
 <body>
   <div class="top-container">
-    <h1>Manta Pharmacy checkin/checkout v8.13</h1>
+    <h1>Manta Pharmacy checkin/checkout v8.14</h1>
     <p id="welcome">👤 Welcome loading...</p>
-
-<!--     <div class="select-row">
-      <label for="employeeName">ชื่อพนักงาน:</label>
-      <select id="employeeName">
-        <option value="">-- กรุณาเลือก --</option>
-        <option value="แจง">แจง</option>
-        <option value="รัตน์">รัตน์</option>
-        <option value="นัน">นัน</option>
-        <option value="บีช">บีช</option>
-        <option value="น๊อต">น๊อต</option>
-        <option value="พวง">พวง</option>
-        <option value="เกศ">เกศ</option>
-        <option value="โบว์">โบว์</option>
-        <option value="ปุย">ปุย</option>
-        <option value="เน็ต">เน็ต</option>
-        <option value="กรุ๊ป">กรุ๊ป</option>
-        <option value="ปาย">ปาย</option>
-        <option value="จุ๊บ">จุ๊บ</option>
-        <option value="ว่าน">ว่าน</option>
-        <option value="ดัร">ดัร</option>
-        <option value="ขนมผิง">ขนมผิง</option>
-        <option value="ปอย">ปอย</option>
-        <option value="จักร">จักร</option>
-        <option value="นูนู">นูนู</option>
-      </select>
-    </div> -->
+    
+    <pre id="debug" style="color:gray; font-size:12px;"></pre>
   </div>
 
   <div>
@@ -455,8 +431,6 @@
   <!-- <label>หมายเหตุ:</label> -->
   <!-- <input type="text" id="note" name="note"><br><br> -->
   
-  <pre id="debug" style="color:gray; font-size:12px;"></pre>
-
   <div class="button-container">
     <button class="checkin" onclick="submitForm('Check In')">📥 Check In</button>
     <button class="checkout" onclick="submitForm('Check Out')">📤 Check Out</button>
