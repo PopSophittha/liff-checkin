@@ -154,9 +154,9 @@
       // แต่ถ้ามี query อื่น (เช่น ?foo=bar) ต้องเพิ่ม &v= แทน
       let newUrl = baseUrl;
       if (window.location.search.length > 0) {
-        newUrl += window.location.search + "&v=8.14";
+        newUrl += window.location.search + "&v=8.15";
       } else {
-        newUrl += "?v=8.14";
+        newUrl += "?v=8.15";
       }
       window.location.href = newUrl;
       return;  // หยุด script หลัง redirect
@@ -261,6 +261,7 @@
       const lng = document.getElementById('lngHidden').value;
       // const note = document.getElementById('note').value;
 
+      log("📍"+lat+","+lng);
       if (!lat || !lng) {
         alert('ไม่พบพิกัด กรุณาอนุญาติเข้าถึงตำแหน่ง');
         return;
@@ -293,12 +294,13 @@
       // google.script.run.withSuccessHandler(function(status) {
         log("กำลังส่งพิกัด");
         alert("📌 บันทึก " + status + " เรียบร้อยแล้ว!");
-        liff.closeWindow(); // ปิด LIFF ทันทีหลังจากกด OK ใน alert //ใข้ได้เมื่อ init liff สมบูรณ์
+        // liff.closeWindow(); // ปิด LIFF ทันทีหลังจากกด OK ใน alert //ใข้ได้เมื่อ init liff สมบูรณ์
 
         // ✅ เรียกส่งข้อความเข้าแชทตรงนี้
         if (liff.isInClient()) {
           summaryMessage();
-        } else {
+        } else {    
+          log("❌ ไม่ได้เปิดจากในแชท LINE OA");
           console.warn("❌ ไม่ได้เปิดจากในแชท LINE OA");
         }
 
@@ -359,7 +361,7 @@
       liff.sendMessages([message])
         .then(() => {
           console.log('Message sent');
-          liff.closeWindow();
+          liff.closeWindow(); // ปิด LIFF ทันทีหลังจากกด OK ใน alert //ใข้ได้เมื่อ init liff สมบูรณ์
         })
         .catch((err) => {
           console.error('Error sending message:', err);
@@ -413,7 +415,7 @@
 </head>
 <body>
   <div class="top-container">
-    <h1>Manta Pharmacy checkin/checkout v8.14</h1>
+    <h1>Manta Pharmacy checkin/checkout v8.15</h1>
     <p id="welcome">👤 Welcome loading...</p>
     
     <pre id="debug" style="color:gray; font-size:12px;"></pre>
